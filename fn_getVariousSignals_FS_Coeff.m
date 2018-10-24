@@ -24,12 +24,14 @@ if (strcmp(typeSignal,'Square') == 1)
 % where n = 1,2,3,4...
     K = numK;  
     A = 1;
-    tmpCell = optionCell{1}(1);  % This cell should be 'DutyCycle'
+    tmpCell     = optionCell{1}(1);  % This cell should be 'DutyCycle'
     tmpValCell  = optionCell{1}(2);  % This cell should be a value between 0->1.0
-    DutyCycle = tmpValCell{1}(1);
+    DutyCycle   = tmpValCell{1}(1);
     
     % The dc term
-    myA(1)  = A/2;  myF(1) = 0;   myPhi(1) = 0;
+    myA(1)  = A*DutyCycle;  myF(1) = 0;   myPhi(1) = 0;
+    % Must re-calculate the DC coefficient with duty cycle.
+    
     for (k=1:K-1)
         myA(k+1)   = (2*A/(k*pi))*sin(k*pi*DutyCycle);
         myF(k+1)   = k*myFundamentalFreq;  
@@ -79,12 +81,13 @@ if (strcmp(typeSignal,'Saw') == 1)
     for (k=1:K-1)
         if (AscendingFlag ==1)
             myA(k+1)   = (2*A)/(k*pi);
-            myPhi(k+1) = +pi/2;  
+            myPhi(k+1) =  +pi/2;  
         else
             myA(k+1)   = (2*A)/(k*pi);
             myPhi(k+1) =  -pi/2;  
         end
         myF(k+1)   = k*myFundamentalFreq;  
+
     end
 end
 
