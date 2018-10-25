@@ -1,13 +1,14 @@
 # DSP-Matlab-Fourier-Series
 Author:
-Chng Eng Siong
+Chng Eng Siong, NTU, Singapore
 
 
 23 Oct 2018
 
 This code base is Matlab to display
 
-a) the waveform in time
+a) the various periodic waveform in time (DIY = a periodic waveform,
+SAW, Triangle, and Square)
 
 b) the Fourier Series (magnitude and phase) of the waveforms.
 

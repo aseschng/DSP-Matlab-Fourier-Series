@@ -1,5 +1,7 @@
 % Lets plot some periodic wavefiles in time,
 % and then generate its Fourier representations.
+% you can select by changing the variable option = ???;
+
 % Author: Chng Eng Siong
 % Date: 19 Oct 2018
 
@@ -15,9 +17,7 @@ colormap ='rgbckrgbckrgbck';
 %   The following routines is to get the FS coefficients ONLY
 %%%%%%%%%%%%%%%%%%%
 
-
-
-option = 3;
+option = 1;
 switch option
     case 1
         strSignalToGenerate = 'DIY'; 
@@ -46,7 +46,7 @@ N   = Fs;
 % therefore the resolution at each bin is 1 Hz! since we generate N samples
 % for 1 second analysis window.
 w0  = 2*pi/N;
-myFundamentalFreq = 100;  % we will generate periodic signals with this fundamental freqeuncies
+myFundamentalFreq = 1000;  % we will generate periodic signals with this fundamental freqeuncies
 K   = 10;  % number of sinusoids to generate
 vDelayTimeNormalized = 0.0*(1/myFundamentalFreq);  % how much of 1 period of fundamental
 
@@ -55,7 +55,7 @@ vDelayTimeNormalized = 0.0*(1/myFundamentalFreq);  % how much of 1 period of fun
 switch strSignalToGenerate
     
     case 'DIY'
-        [myA,myF,myPhi,K] = fn_getVariousSignals_FS_Coeff('DIY',3,N,myFundamentalFreq);
+        [myA,myF,myPhi,K] = fn_getVariousSignals_FS_Coeff('DIY',4,N,myFundamentalFreq);
 
     case 'Square'
         % option For Square an array of cell, string and value pair, {{'DutyCycle',0..1 range}}
