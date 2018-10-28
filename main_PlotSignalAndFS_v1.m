@@ -46,27 +46,29 @@ N   = Fs;
 % therefore the resolution at each bin is 1 Hz! since we generate N samples
 % for 1 second analysis window.
 w0  = 2*pi/N;
-myFundamentalFreq = 1000;  % we will generate periodic signals with this fundamental freqeuncies
-K   = 10;  % number of sinusoids to generate
+myFundamentalFreq = 10;  % we will generate periodic signals with this fundamental freqeuncies
 vDelayTimeNormalized = 0.0*(1/myFundamentalFreq);  % how much of 1 period of fundamental
-
-
+% the above allows u to delay the signal in time 
 
 switch strSignalToGenerate
     
     case 'DIY'
-        [myA,myF,myPhi,K] = fn_getVariousSignals_FS_Coeff('DIY',4,N,myFundamentalFreq);
+        K   = 4;  % number of sinusoids to generate
+        [myA,myF,myPhi,K] = fn_getVariousSignals_FS_Coeff('DIY',K,N,myFundamentalFreq);
 
     case 'Square'
         % option For Square an array of cell, string and value pair, {{'DutyCycle',0..1 range}}
-        [myA,myF,myPhi,K] = fn_getVariousSignals_FS_Coeff('Square',K,N,myFundamentalFreq,{{'DutyCycle',0.5}});
+        K   = 25;  % number of sinusoids to generate
+        [myA,myF,myPhi,K] = fn_getVariousSignals_FS_Coeff('Square',K,N,myFundamentalFreq,{{'DutyCycle',0.2}});
 
     case 'Saw'
         % optionStr {{'Ascending',0 or 1}} -> to plot ascending or descending saw
+        K   = 10;  % number of sinusoids to generate
         [myA,myF,myPhi,K] = fn_getVariousSignals_FS_Coeff('Saw',K,N,myFundamentalFreq,{{'Ascending',1}});
 
         
     case 'Triangle'
+        K   = 6;  % number of sinusoids to generate
         [myA,myF,myPhi,K] = fn_getVariousSignals_FS_Coeff('Triangle',K,N,myFundamentalFreq);
         
         
@@ -89,7 +91,7 @@ if(vDelayTimeNormalized ~= 0)
     [t, my_y_orig, my_yT_orig] = fn_genTimeSignalFrom_FSCoeff(myA, myF, myPhi_orig, K, Fs);
     [t_delayed, my_y_delayed, my_yT_delayed] = fn_genTimeSignalFrom_FSCoeff(myA, myF, myPhi_delayed, K, Fs);
     
-    figure(5);  
+    figure(6);  
     numCycle=3;
     if (myF(1) ~= 0)
         numSampleToPlot = ceil(numCycle*(1/myF(1))*Fs);
@@ -113,6 +115,9 @@ end
 [t10, my_y10, my_yT10] = fn_genTimeSignalFrom_FSCoeff(myA, myF, myPhi, K, Fs*10);
 
 
+
+
+
 %%%%%%%%%%%%%%%%%%%
 % Lets plot the time domain representation of each sinusoid
 % thats going to add up
@@ -131,9 +136,9 @@ xlabel('time (sec)');
 ylabel('y_k(t)'); hold on;
 for (k=1:K)
     if (myPhi(k) >= 0)
-        tmpLegend = sprintf('y%d(t) = %3.2f cos(2pi %d + %3.2f)',k, myA(k), myF(k), myPhi(k));
+        tmpLegend = sprintf('y%d(t) = %3.2f cos(2pi %dt + %3.2f)',k, myA(k), myF(k), myPhi(k));
     else
-        tmpLegend = sprintf('y%d(t) = %3.2f cos(2pi %d  %3.2f)',k, myA(k), myF(k), myPhi(k));
+        tmpLegend = sprintf('y%d(t) = %3.2f cos(2pi %dt  %3.2f)',k, myA(k), myF(k), myPhi(k));
     end
     
     tt=sprintf('%c%c',colormap(mod(k,length(colormap))+1),char('o'));
@@ -182,16 +187,7 @@ phaseYT = fn_PostProcessPhase(YT);
 phaseYTnormalized  = phaseYT/pi;
 
 % plotting only for +ve frequency , showing A*cosine(frequency+phase);
-figure;
-fval = 0:N-1; % zero-centered frequency range
-subplot(2,1,1); stem(fval(1:HalfN),magYTRHS); grid on;
-title(' Magnitude plot of yT - as sum of cosine+phase shift');
-xlabel('Frequency (Hz)'); grid on;
-
-subplot(2,1,2); stem(fval(1:HalfN),phaseYT(1:HalfN)); grid on;
-title(' Phase plot of yT');
-ylabel('radian');
-xlabel('Frequency (Hz)'); grid on;
+highestFreq       = min(N-1,max(myF(1:K))+10);
 
 
 
@@ -207,14 +203,17 @@ magYTcentered = fftshift(magYT);
 phaseYT = fn_PostProcessPhase(YT);
 phaseYTcentered = fftshift(phaseYT);
 fshift = (-N/2:N/2-1)*(Fs/N); % zero-centered frequency range
+fshiftStartIdx = (ceil(N/2))-highestFreq;
+fshiftEndIdx = (ceil(N/2))+highestFreq;
+
 
 figure(4);
-subplot(2,1,1); stem(fshift,magYTcentered); hold on; grid on; 
+subplot(2,1,1); stem(fshift(fshiftStartIdx:fshiftEndIdx),magYTcentered(fshiftStartIdx:fshiftEndIdx)); hold on; grid on; 
 title(' Magnitude plot of yT - as sum of complex exponential');
 xlabel('Frequency (Hz)'); 
 
 
-subplot(2,1,2); stem(fshift,phaseYTcentered); hold on;grid on; 
+subplot(2,1,2); stem(fshift(fshiftStartIdx:fshiftEndIdx),phaseYTcentered(fshiftStartIdx:fshiftEndIdx)); hold on;grid on; 
 title(' Phase plot of yT');
 ylabel('radian');
 xlabel('Frequency (Hz)'); grid on;
@@ -223,21 +222,22 @@ xlabel('Frequency (Hz)'); grid on;
 
 % Compare the FFT of the signal vs the sinsusoids that compose it!
 % plotting only for +ve frequency , 
-figure;
+figure(5);
 fval = 0:N-1; % zero-centered frequency range
-subplot(2,1,1); stem(fval(1:HalfN),magYTRHS,'b-o');  hold on;
+subplot(2,1,1); stem(fval(1:highestFreq),magYTRHS(1:highestFreq),'b-o');  hold on;
 title(' Comparing FFT magnitude and the equation of sinusoids');
 xlabel('Frequency (Hz)'); grid on;
 
-subplot(2,1,2); stem(fval(1:HalfN),phaseYT(1:HalfN),'b-o'); hold on;
+subplot(2,1,2); stem(fval(1:highestFreq),phaseYT(1:highestFreq),'b-o'); hold on;
 title(' Comparing FFT Phase and the equation of sinusoids');
 ylabel('radian');
 xlabel('Frequency (Hz)'); grid on;
 
 for (k=1:K)
-    tmpLegend = sprintf('y%d(t) = %3.2f cos(2pi %d + %3.2f)',k, myA(k), myF(k), myPhi(k));
+    tmpLegend = sprintf('y%d(t) = %3.2f cos(2pi %d t + %3.2f)',k, myA(k), myF(k), myPhi(k));
     subplot(2,1,1); stem(myF(k),myA(k),'r+'); grid on; 
     subplot(2,1,2); stem(myF(k), myPhi(k),'r+'); grid on;
+    opLegend{k} = tmpLegend; hold on; grid on;
 end
-
+% legend(opLegend);   % no space at the graph
 

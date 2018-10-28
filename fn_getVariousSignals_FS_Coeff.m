@@ -17,7 +17,7 @@ function [myA,myF,myPhi,K] = fn_getVariousSignals_FS_Coeff(typeSignal, numK, N, 
 w0  = 2*pi/N;
 % lets specify the sinusoids with respect to w0.
 % The equation below is from Math2, slide pg 64, Fourier Series Slides
-% y(t) = 10 +3cos(w_0 t) + 5cos(2w_0 t + phi/6) + 4sin(3w_0 t)
+% y(t) = 10 +3cos(w_0 t) + 5cos(2.5w_0 t + phi/6) + 4sin(3w_0 t)
 if (strcmp(typeSignal,'DIY') == 1)
     K = 4;  % Lets have three sinusoid
     myA(1) = 10;   myF(1)   = 0*myFundamentalFreq;  myPhi(1) =  0;   
