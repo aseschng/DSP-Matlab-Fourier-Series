@@ -140,7 +140,7 @@ for (k=1:K)
     if (myPhi(k) >= 0)
         tmpLegend = sprintf('y%d(t) = %3.2f cos(2pi %dt + %3.2f)',k, myA(k), myF(k), myPhi(k));
     else
-        tmpLegend = sprintf('y%d(t) = %3.2f cos(2pi %dt - %3.2f)',k, myA(k), myF(k), myPhi(k));
+        tmpLegend = sprintf('y%d(t) = %3.2f cos(2pi %dt  %3.2f)',k, myA(k), myF(k), myPhi(k));
     end
     
     tt=sprintf('%c%c',colormap(mod(k,length(colormap))+1),char('o'));
