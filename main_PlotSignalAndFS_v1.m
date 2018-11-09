@@ -17,7 +17,7 @@ colormap ='rgbckrgbckrgbck';
 %   The following routines is to get the FS coefficients ONLY
 %%%%%%%%%%%%%%%%%%%
 
-option = 1;
+option = 4;
 switch option
     case 1
         strSignalToGenerate = 'DIY'; 
@@ -58,7 +58,7 @@ switch strSignalToGenerate
 
     case 'Square'
         % option For Square an array of cell, string and value pair, {{'DutyCycle',0..1 range}}
-        K   = 25;  % number of sinusoids to generate
+        K   = 20;  % number of sinusoids to generate
         [myA,myF,myPhi,K] = fn_getVariousSignals_FS_Coeff('Square',K,N,myFundamentalFreq,{{'DutyCycle',0.2}});
 
     case 'Saw'
@@ -128,7 +128,9 @@ if (myF(1) ~= 0)
 else
     numSampleToPlot = ceil(numCycle*(1/myF(2))*Fs);
 end
-st = 1; se = numSampleToPlot;
+st = 1; 
+se = min(numSampleToPlot, Fs);
+
 figure(1);
 tt = sprintf(' Time domain representation of y : numSinusoid = %d',K);
 title(tt);
@@ -187,7 +189,7 @@ phaseYT = fn_PostProcessPhase(YT);
 phaseYTnormalized  = phaseYT/pi;
 
 % plotting only for +ve frequency , showing A*cosine(frequency+phase);
-highestFreq       = min(N-1,max(myF(1:K))+10);
+highestFreq       = min(N-1,max(myF(1:K))+2);
 
 
 
@@ -203,18 +205,18 @@ magYTcentered = fftshift(magYT);
 phaseYT = fn_PostProcessPhase(YT);
 phaseYTcentered = fftshift(phaseYT);
 fshift = (-N/2:N/2-1)*(Fs/N); % zero-centered frequency range
-fshiftStartIdx = (ceil(N/2))-highestFreq;
+fshiftStartIdx = (ceil(N/2))-highestFreq+2;
 fshiftEndIdx = (ceil(N/2))+highestFreq;
 
 
 figure(4);
 subplot(2,1,1); stem(fshift(fshiftStartIdx:fshiftEndIdx),magYTcentered(fshiftStartIdx:fshiftEndIdx)); hold on; grid on; 
-title(' Magnitude plot of yT - as sum of complex exponential');
+title(' Magnitude Spectrum  yT(t) - complex exponential form');
 xlabel('Frequency (Hz)'); 
 
 
 subplot(2,1,2); stem(fshift(fshiftStartIdx:fshiftEndIdx),phaseYTcentered(fshiftStartIdx:fshiftEndIdx)); hold on;grid on; 
-title(' Phase plot of yT');
+title(' Phase Spectrum  yT(t) - complex exponential form');
 ylabel('radian');
 xlabel('Frequency (Hz)'); grid on;
 
@@ -225,11 +227,11 @@ xlabel('Frequency (Hz)'); grid on;
 figure(5);
 fval = 0:N-1; % zero-centered frequency range
 subplot(2,1,1); stem(fval(1:highestFreq),magYTRHS(1:highestFreq),'b-o');  hold on;
-title(' Comparing FFT magnitude and the equation of sinusoids');
+title('Magnitude Spectrum-  Combine Trigo Form');
 xlabel('Frequency (Hz)'); grid on;
 
 subplot(2,1,2); stem(fval(1:highestFreq),phaseYT(1:highestFreq),'b-o'); hold on;
-title(' Comparing FFT Phase and the equation of sinusoids');
+title(' Phase Spectrum- Combine Trigo Form');
 ylabel('radian');
 xlabel('Frequency (Hz)'); grid on;
 

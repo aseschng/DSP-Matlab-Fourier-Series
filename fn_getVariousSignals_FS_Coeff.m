@@ -78,20 +78,18 @@ end  % of Triangle
 
 if (strcmp(typeSignal,'Saw') == 1)
 % defining the coefficients of a saw Toothwave
-% a[n] = -(2*A/(n*pi))*(-1)^n
-% where n = 1,2,3,4...
     K = numK;  A = 1;
-    myA(1)  = 3;  myF(1) = 0;   myPhi(1) = 0;
+    myA(1)  = A/2;  myF(1) = 0;   myPhi(1) = 0;
     tmpCell = optionCell{1}(1);  % This cell should be 'Ascending'
     tmpValCell  = optionCell{1}(2);  % This cell should be a value between 0-> descending, 1-> ascending
     AscendingFlag  = (tmpValCell{1}(1) == 1);
 
     for (k=1:K-1)
         if (AscendingFlag ==1)
-            myA(k+1)   = (2*A)/(k*pi);
+            myA(k+1)   = (2*A)/(k*2*pi);
             myPhi(k+1) =  +pi/2;  
         else
-            myA(k+1)   = (2*A)/(k*pi);
+            myA(k+1)   = (2*A)/(k*2*pi);
             myPhi(k+1) =  -pi/2;  
         end
         myF(k+1)   = k*myFundamentalFreq;  
